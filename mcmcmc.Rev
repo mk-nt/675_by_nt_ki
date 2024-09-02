@@ -6,6 +6,10 @@ treeFile = "675_by_nt_ki.trees"
 ckpFile = "675_by_nt_ki.ckp"
 source("by_nt_ki.Rev")
 
+monitors.append( mnModel(filename = logFile, printgen = 36) )
+monitors.append( mnModel(filename = paramFile, printgen = 6, stochasticOnly = TRUE, exclude = ["rel_br_lengths"]) )
+monitors.append( mnFile(filename = treeFile, printgen = 12, phylogeny) )
+
 mymc3 = mcmcmc(
   mymodel, monitors, moves,
   nruns = 2,
@@ -27,7 +31,8 @@ if (fileExists("675_by_nt_ki_run_1_chain_0.ckp")) {
 }
 
 stopping_rules[1] = srMaxTime(71, "hours")
-stopping_rules[2] = srMinESS(256, paramFile, checkFreq)
+# Overshoot ESS slightly as calculations may differ
+stopping_rules[2] = srMinESS(300, paramFile, checkFreq)
 # PSRF stopping rule seems never to trigger in rb1.2.4. Omit.
 # stopping_rules[3] = srGelmanRubin(1.01, paramFile, checkFreq)
 
